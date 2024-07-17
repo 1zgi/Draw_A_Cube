@@ -12,7 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
-#include <D:\ctrlrings\Tutorials\Drawing Cube\Drawing Cube\common\shader.hpp>
+#include <D:\ctrlrings\Tutorials\DrawingCube\DrawingCube\src\headers\shader.hpp>
 
 #undef main
 using namespace std;
