@@ -18,8 +18,8 @@ public:
     bool init();
     void render(Cube& cube);
     void cleanup();
-    Window& getWindow(); // Ensure this method is declared
-    void setLightPosition(const glm::vec3& position); // Add this method
+    Window& getWindow();
+    void setLightPosition(const glm::vec3& position);
 
 private:
     Window& window;
@@ -32,6 +32,10 @@ private:
     glm::mat4 View;
     glm::vec3 lightPos;
     bool compileShaders();
+
+    // Declare any additional OpenGL resources here
+    GLuint vao;
+    GLuint vbo;
 };
 
 #endif // RENDERER_H
