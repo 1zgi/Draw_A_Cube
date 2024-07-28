@@ -12,7 +12,7 @@ Renderer::Renderer(Window& window)
     lightPos(4.0f, 4.0f, 4.0f) {}
 
 Renderer::~Renderer() {
-    glDeleteProgram(programID);
+    cleanup();
 }
 
 bool Renderer::init() {
@@ -47,14 +47,40 @@ bool Renderer::init() {
 }
 
 void Renderer::render(Cube& cube) {
+    // Clear the buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Compute the MVP matrix
     glm::mat4 Model = glm::rotate(glm::mat4(1.0f), (float)SDL_GetTicks() / 1000.0f * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 MVP = Projection * View * Model;
 
+    // Pass the MVP matrix to the shader
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &Model[0][0]);
 
+    // Update the light position in the shader
+    glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+
+    // Render the cube
     cube.draw();
+
+    // Swap the window buffers
     SDL_GL_SwapWindow(window.getWindow());
+}
+
+void Renderer::cleanup() {
+    if (programID) {
+        glDeleteProgram(programID);
+        programID = 0;
+    }
+
+    // Cleanup other OpenGL resources
+}
+
+void Renderer::setLightPosition(const glm::vec3& position) {
+    lightPos = position;
+}
+
+Window& Renderer::getWindow() {
+    return window;
 }
