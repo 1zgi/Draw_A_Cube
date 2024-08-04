@@ -1,5 +1,7 @@
 #include "headers/ImGuiApp.h"
 
+ImGuiApp::ImGuiApp() : window(nullptr) {}
+
 ImGuiApp::~ImGuiApp()
 {
     Cleanup();
@@ -7,6 +9,8 @@ ImGuiApp::~ImGuiApp()
 
 bool ImGuiApp::Init(Window* window)
 {
+    this->window = window;
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -18,8 +22,16 @@ bool ImGuiApp::Init(Window* window)
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer bindings
-    ImGui_ImplSDL2_InitForOpenGL(window->getWindow(), window->getContext());
-    ImGui_ImplOpenGL3_Init("#version 330");
+    if (!ImGui_ImplSDL2_InitForOpenGL(window->getWindow(), window->getContext()))
+    {
+        std::cerr << "Failed to initialize ImGui SDL2 backend!" << std::endl;
+        return false;
+    }
+    if (!ImGui_ImplOpenGL3_Init("#version 330"))
+    {
+        std::cerr << "Failed to initialize ImGui OpenGL3 backend!" << std::endl;
+        return false;
+    }
 
     return true;
 }
@@ -55,24 +67,33 @@ void ImGuiApp::Run(Renderer* renderer, Cube* cube)
         // Render your scene
         renderer->render(*cube);
 
-        // Render ImGui
+        // Rendering ImGui
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Swap buffers
+        SDL_GL_SwapWindow(renderer->getWindow().getWindow());
 
         // Check for OpenGL errors
         GLenum err;
         while ((err = glGetError()) != GL_NO_ERROR) {
             std::cerr << "OpenGL error: " << err << std::endl;
         }
-
-        SDL_GL_SwapWindow(renderer->getWindow().getWindow());
     }
 }
 
 void ImGuiApp::Cleanup()
 {
-    // Cleanup
+    // Cleanup ImGui
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+
+    // Cleanup SDL
+    if (window) {
+        SDL_GL_DeleteContext(window->getContext());
+        SDL_DestroyWindow(window->getWindow());
+        window = nullptr;
+    }
+    SDL_Quit();
 }

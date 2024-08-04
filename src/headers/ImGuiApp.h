@@ -14,6 +14,7 @@
 class ImGuiApp
 {
 public:
+    ImGuiApp();
     ~ImGuiApp();
     bool Init(Window* window);
     void Run(Renderer* renderer, Cube* cube);
@@ -21,7 +22,8 @@ public:
 
 private:
     bool done = false;
-    glm::vec3 lightPosition = glm::vec3(4.0f, 4.0f, 4.0f); // Add this member variable
+    glm::vec3 lightPosition = glm::vec3(4.0f, 4.0f, 4.0f);
+    Window* window; // Add this member variable
 };
 
 #endif // IMGUI_APP_H

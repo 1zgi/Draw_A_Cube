@@ -42,7 +42,7 @@ int main(int argc, char* args[]) {
         
     }
 
-    imguiApp.Cleanup();
+    //imguiApp.Cleanup();
     
     
 
