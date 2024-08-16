@@ -14,7 +14,7 @@ public:
     bool init();
     void render(Cube& cube);
     void cleanup();
-
+    void printMatrix(const glm::mat4& matrix);
     void setLightPosition(const glm::vec3& position);
     Window& getWindow();
 
@@ -29,7 +29,6 @@ private:
     GLuint LightID;
     GLuint AmbientLightID;
     
-    glm::mat4  View;
     glm::mat4 Projection;
     glm::vec3 lightPos;
     glm::vec3 lightIntensity;
@@ -37,6 +36,10 @@ private:
 
     GLuint vao;
     GLuint vbo;
+
+   
+
+    bool positionPrinted;
 };
 
 #endif

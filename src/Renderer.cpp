@@ -10,12 +10,12 @@ Renderer::Renderer(Window& window, Camera& camera)
     LightID(0),
     AmbientLightID(0),
     Projection(glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f)),
-    View(glm::lookAt(glm::vec3(4, 3, -3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0))),
     lightPos(4.0f, 4.0f, 4.0f),
     lightIntensity(1.0f, 1.0f, 1.0f),
     ambientLightIntensity(0.2f, 0.2f, 0.2f),
     vao(0),
-    vbo(0) {}
+    vbo(0),
+    positionPrinted(false){}  // Initialize the flag to false
 
 Renderer::~Renderer() {
     cleanup();
@@ -94,8 +94,19 @@ void Renderer::render(Cube& cube) {
 
     // Compute the MVP matrix
     glm::mat4 Model = glm::rotate(glm::mat4(1.0f), (float)SDL_GetTicks() / 1000.0f * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    //glm::mat4 View = camera.getViewMatrix();
+    glm::mat4 View = camera.getViewMatrix();
+    printMatrix(View);
     glm::mat4 MVP = Projection * View * Model;
+
+    // Print the cube position
+    if (!positionPrinted) {
+        glm::vec4 cubePosition_worldspace = Model * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);// Calculate cube's position in world space (assuming origin in model space)
+        std::cout << "Cube Position in World Space: ("
+            << cubePosition_worldspace.x << ", "
+            << cubePosition_worldspace.y << ", "
+            << cubePosition_worldspace.z << ")" << std::endl;
+        positionPrinted = true;  // Set the flag to true
+    }
 
     glUseProgram(programID);
 
@@ -137,6 +148,16 @@ void Renderer::cleanup() {
     }
 
     // Any additional cleanup for OpenGL resources
+}
+
+void Renderer::printMatrix(const glm::mat4& matrix) {
+    std::cout << "Matrix:\n";
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void Renderer::setLightPosition(const glm::vec3& position) {
