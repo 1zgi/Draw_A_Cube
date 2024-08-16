@@ -10,7 +10,7 @@ const int SCREEN_HEIGHT = 768;
 int main(int argc, char* args[]) {
     Window window(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    Camera camera(glm::vec3(4.0f, 3.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Camera camera(glm::vec3(-4.0f, 3.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     if (!window.init()) {
         std::cerr << "Failed to initialize window\n";
@@ -44,13 +44,15 @@ int main(int argc, char* args[]) {
         lastTime = currentTime;
 
         while (SDL_PollEvent(&event)) {
-            ImGui_ImplSDL2_ProcessEvent(&event);
+            
             if (event.type == SDL_QUIT) {
                 running = false;
             }
             if (event.type == SDL_MOUSEMOTION) {
                 camera.handleMouseMotion(event.motion.xrel, event.motion.yrel);
             }
+
+            ImGui_ImplSDL2_ProcessEvent(&event);
         }
         const Uint8* state = SDL_GetKeyboardState(NULL);
         camera.handleKeyboardInput(state, deltaTime);
