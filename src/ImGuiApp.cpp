@@ -1,14 +1,12 @@
 #include "headers/ImGuiApp.h"
 
-ImGuiApp::ImGuiApp() : window(nullptr) {}
+ImGuiApp::ImGuiApp() : window(nullptr), done(false) {}
 
-ImGuiApp::~ImGuiApp()
-{
+ImGuiApp::~ImGuiApp() {
     Cleanup();
 }
 
-bool ImGuiApp::Init(Window* window)
-{
+bool ImGuiApp::Init(Window* window) {
     this->window = window;
 
     // Setup Dear ImGui context
@@ -16,19 +14,16 @@ bool ImGuiApp::Init(Window* window)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows if needed
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer bindings
-    if (!ImGui_ImplSDL2_InitForOpenGL(window->getWindow(), window->getContext()))
-    {
+    if (!ImGui_ImplSDL2_InitForOpenGL(window->getWindow(), window->getContext())) {
         std::cerr << "Failed to initialize ImGui SDL2 backend!" << std::endl;
         return false;
     }
-    if (!ImGui_ImplOpenGL3_Init("#version 330"))
-    {
+    if (!ImGui_ImplOpenGL3_Init("#version 330")) {
         std::cerr << "Failed to initialize ImGui OpenGL3 backend!" << std::endl;
         return false;
     }
@@ -36,14 +31,11 @@ bool ImGuiApp::Init(Window* window)
     return true;
 }
 
-void ImGuiApp::Run(Renderer* renderer, Cube* cube)
-{
-    while (!done)
-    {
+void ImGuiApp::Run(Renderer* renderer, Cube* cube) {
+
         // Poll and handle events
         SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
+        while (SDL_PollEvent(&event)) {
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
                 done = true;
@@ -79,21 +71,22 @@ void ImGuiApp::Run(Renderer* renderer, Cube* cube)
         while ((err = glGetError()) != GL_NO_ERROR) {
             std::cerr << "OpenGL error: " << err << std::endl;
         }
-    }
 }
 
-void ImGuiApp::Cleanup()
-{
+void ImGuiApp::Cleanup() {
     // Cleanup ImGui
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
+    if (ImGui::GetCurrentContext()) {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
+    }
 
-    // Cleanup SDL
+    // Note: Cleanup SDL only if this class is responsible for it.
     if (window) {
-        SDL_GL_DeleteContext(window->getContext());
-        SDL_DestroyWindow(window->getWindow());
+        // Avoid deleting the SDL context and window if they're managed elsewhere
         window = nullptr;
     }
-    SDL_Quit();
+
+    // Avoid calling SDL_Quit here if it's managed elsewhere in your application.
+    // SDL_Quit();
 }
