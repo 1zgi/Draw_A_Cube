@@ -1,41 +1,45 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
 #include "Cube.h"
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include "Camera.h"
 #include "shader.hpp"
-class Renderer
-{
+
+class Renderer {
 public:
-    Renderer(Window& window);
+    Renderer(Window& window, Camera& camera);
     ~Renderer();
+
     bool init();
     void render(Cube& cube);
     void cleanup();
-    Window& getWindow();
+    void printMatrix(const glm::mat4& matrix);
     void setLightPosition(const glm::vec3& position);
+    Window& getWindow();
 
 private:
     Window& window;
+    Camera& camera;
+
     GLuint programID;
     GLuint MatrixID;
     GLuint ViewMatrixID;
     GLuint ModelMatrixID;
     GLuint LightID;
+    GLuint AmbientLightID;
+    
     glm::mat4 Projection;
-    glm::mat4 View;
     glm::vec3 lightPos;
-    bool compileShaders();
+    glm::vec3 lightIntensity;
+    glm::vec3 ambientLightIntensity;
 
-    // Declare any additional OpenGL resources here
     GLuint vao;
     GLuint vbo;
+
+   
+
+    bool positionPrinted;
 };
 
-#endif // RENDERER_H
+#endif
