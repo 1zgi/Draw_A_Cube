@@ -26,6 +26,7 @@ int main(int argc, char* args[]) {
     cube.init();
 
     bool running = true;
+    bool mouseCapturedByImGui = false;
     SDL_Event event;
 
     ImGuiApp imguiApp;
@@ -48,7 +49,12 @@ int main(int argc, char* args[]) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-            if (event.type == SDL_MOUSEMOTION) {
+
+            // Check if ImGui is capturing the mouse
+            ImGuiIO& io = ImGui::GetIO();
+            mouseCapturedByImGui = io.WantCaptureMouse;
+
+            if (!mouseCapturedByImGui && event.type == SDL_MOUSEMOTION) {
                 camera.handleMouseMotion(event.motion.xrel, event.motion.yrel);
             }
 
